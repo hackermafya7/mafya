@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اسكريبت الطياره</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            position: relative;
+        }
+
+        #pageLogo {
+            width: 200px;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .content-container {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 15px;
+            border: 2px solid #4caf50;
+            background-color: transparent;
+            color: white;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            margin-top: 100px;
+            position: relative;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+
+        #crashValue {
+            font-size: 4em; /* حجم الخط أكبر لتكون أكثر وضوحًا */
+            margin: 15px 0;
+            padding: 15px;
+            color: #ffffff; /* لون النص أبيض */
+            line-height: 1.2;
+            font-weight: bold; /* الخط عريض */
+        }
+
+        .icon-container {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* المسافة بين الأيقونات */
+            z-index: 1;
+        }
+
+        .icon-container a {
+            color: #ffffff;
+            font-size: 40px; /* حجم الأيقونات أكبر */
+            text-decoration: none;
+        }
+
+        .icon-container a:hover {
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div id="pageLogo"></div>
+    
+    <div class="content-container">
+        <div id="crashValue">0.00</div> <!-- الرقم يظهر هنا -->
+    </div>
+
+    <div class="icon-container">
+        <a href="https://www.tiktok.com/@mafya7_xbet?_t=8pbcuQBLbym&_r=1" target="_blank" title="تابعنا على تيك توك"><i class="fab fa-tiktok"></i></a>
+        <a href="https://www.youtube.com/@mafya7" target="_blank" title="تابعنا على يوتيوب"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.facebook.com/profile.php?id=61564768001209&mibextid=ZbWKwL" target="_blank" title="تابعنا على فيسبوك"><i class="fab fa-facebook-f"></i></a>
+    </div>
+    
+    <script>
+        var ws = null;
+        var previousValues = [];
+        var currentIndex = 0;
+
+        function openWebSocket() {
+            var url = 'wss://coincharger.icu/games-frame/sockets/crash?whence=114&fcountry=66&ref=233&gr=790&appGuid=00000000-0000-0000-0000-000000000000&lng=ar';
+            ws = new WebSocket(url);
+            
+            ws.onopen = function() {
+                console.log('WebSocket opened');
+                ws.send('{"protocol":"json","version":1}\x1e');
+                ws.send('{"arguments":[{"activity":30,"currency":119}],"invocationId":"0","target":"Guest","type":1}\x1e');
+            };
+            
+            ws.onclose = function() {
+                console.log('WebSocket closed');
+                ws = null;
+            };
+            
+            ws.onmessage = function(event) {
+                var data = JSON.parse(event.data.slice(0, -1));
+                if (data.target === 'OnCrash') {
+                    previousValues.push(data.arguments[0].f);
+                    displayNextValue();
+                }
+            };
+            
+            ws.onerror = function(event) {
+                console.error('WebSocket error:', event);
+            };
+        }
+
+        function displayNextValue() {
+            if (currentIndex < previousValues.length) {
+                var crashValueElement = document.getElementById('crashValue');
+                crashValueElement.innerText = previousValues[currentIndex].toFixed(2); // Ensure the number is formatted to 2 decimal places
+                currentIndex++;
+            }
+        }
+
+        openWebSocket();
+    </script>
+</body>
+</html>
